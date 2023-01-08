@@ -1,0 +1,44 @@
+APTURL="https://updates.signal.org/desktop/apt"
+DISTRO="xenial"
+REPO="main"
+PUBKEY="${PUBKEY_PATH}/signal-desktop-keyring.gpg"
+PACKAGE="signal-desktop"
+
+TS=$(date +%s)
+THIS_BASEDIR="/opt/Signal"
+
+remove()
+{
+    rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}"
+}
+
+pre_install()
+{
+
+    CURRENT_DIR="${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}"
+
+    if [ -d "${CURRENT_DIR}" ] ; then
+      mv -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}" "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}
+
+install()
+{
+    #Inspired by Gentoo's ebuild
+    sed -e 's| --no-sandbox||g' -i usr/share/applications/signal-desktop.desktop
+    sed -e "s|/opt/Signal|${DEBFETCHER_INSTALL_DESTDIR}/opt/Signal|g" -i usr/share/applications/signal-desktop.desktop
+
+    cp -a --parents --  opt/Signal "${DEBFETCHER_INSTALL_DESTDIR}"
+    cp --parents -- usr/share/applications/signal-desktop.desktop "${DEBFETCHER_INSTALL_DESTDIR}"
+    chmod o=r ${DEBFETCHER_INSTALL_DESTDIR}/usr/share/applications/signal-desktop.desktop
+    
+    ln -sf ${DEBFETCHER_INSTALL_DESTDIR}/opt/Signal/signal-desktop "${DEBFETCHER_BIN_SYMLINK_DIR}" 
+}
+
+
+post_install()
+{
+    if [ ${KEEP_OLD} -eq 0 ] ; then
+        rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}

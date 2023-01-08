@@ -1,0 +1,44 @@
+APTURL="https://brave-browser-apt-release.s3.brave.com"
+DISTRO="stable"
+REPO="main"
+PUBKEY="${PUBKEY_PATH}/brave-browser-archive-keyring.gpg"
+PACKAGE="brave-browser"
+
+TS=$(date +%s)
+THIS_BASEDIR="/opt/brave.com"
+
+remove()
+{
+    rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}"
+}
+
+pre_install()
+{
+
+   CURRENT_DIR="${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}"
+
+   if [ -d "${CURRENT_DIR}" ] ; then
+       mv -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}" "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+   fi
+
+}
+
+install()
+{
+    cp -a --parents --  opt/brave.com "${DEBFETCHER_INSTALL_DESTDIR}"
+    cp --parents -- usr/share/applications/brave-browser.desktop "${DEBFETCHER_INSTALL_DESTDIR}"
+    chmod o=r "${DEBFETCHER_INSTALL_DESTDIR}"/usr/share/applications/brave-browser.desktop
+
+
+}
+
+post_install()
+{
+    if [ ${KEEP_OLD} -eq 0 ] ; then
+        rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}/opt/brave.com_${TS}"
+    fi
+
+    sourcepath=$(realpath "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}/brave/brave-browser")
+    ln -sf "${sourcepath}" "${DEBFETCHER_BIN_SYMLINK_DIR}/"
+    sed -e "s;Exec=/;Exec=${DEBFETCHER_BIN_SYMLINK_DIR};" -i "${DEBFETCHER_INSTALL_DESTDIR}"/usr/share/applications/brave-browser.desktop
+}

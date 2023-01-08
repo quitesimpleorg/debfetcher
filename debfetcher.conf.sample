@@ -1,0 +1,7 @@
+TEMPLATES_PATH="/var/lib/debfetcher/templates"
+PUBKEY_PATH="/var/lib/debfetcher/pubkeys/"
+DB_PATH="$HOME/.local/share/debfetcher/"
+CACHE_DIR="$HOME/.cache/debfetcher"
+KEEP_OLD=0
+DEBFETCHER_INSTALL_DESTDIR="$HOME/.debfetcher/"
+DEBFETCHER_BIN_SYMLINK_DIR="$HOME/.debfetcher/bin"
