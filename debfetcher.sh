@@ -78,10 +78,12 @@ print_usage()
 
 verify_sig()
 {
+	set +e
 	gpg --no-default-keyring --keyring "$1" --quiet --verify 2> "${CACHE_DIR}/last_gnupg_verify_result"
 	if [ $? -ne 0 ] ; then
-		fail "Signature check failed"
+		fail "Signature check failed - See "${CACHE_DIR}/last_gnupg_verify_result""
 	fi
+	set -e
 }
 
 
