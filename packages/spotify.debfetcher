@@ -9,9 +9,8 @@ THIS_BASEDIR="/opt/spotify"
 
 install()
 {
-    mkdir -p ${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}
     patchelf --replace-needed libcurl-gnutls.so.4 libcurl.so.4 usr/share/spotify/spotify
-    cp -a usr/share/spotify/* ${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}
+    cp -a -- usr/share/spotify/ ${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}
 
     ln -sf ${DEBFETCHER_INSTALL_DESTDIR}/opt/spotify/spotify "${DEBFETCHER_BIN_SYMLINK_DIR}"
 }
