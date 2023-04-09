@@ -88,6 +88,30 @@ verify_sig()
 
 
 
+# default presets for templates
+remove()
+{
+    rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}"
+}
+
+pre_install()
+{
+    CURRENT_DIR="${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}"
+    if [ -d "${CURRENT_DIR}" ] ; then
+		mv -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}" "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}
+
+post_install()
+{
+    if [ ${KEEP_OLD} -eq 0 ] ; then
+        rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}
+
+
+
+
 debfetcher_install()
 {
 	TEMPLATE_NAME=$(basename "$1")
