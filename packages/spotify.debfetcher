@@ -1,0 +1,40 @@
+APTURL="http://repository.spotify.com"
+DISTRO="stable"
+REPO="non-free"
+PUBKEY="${PUBKEY_PATH}/spotify-keyring-7A3A762FAFD4A51F.gpg"
+PACKAGE="spotify-client"
+
+TS=$(date +%s)
+THIS_BASEDIR="/opt/spotify"
+
+remove()
+{
+    rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}"
+}
+
+pre_install()
+{
+
+    CURRENT_DIR="${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}"
+
+    if [ -d "${CURRENT_DIR}" ] ; then
+      mv -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}" "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}
+
+install()
+{
+    mkdir -p ${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}
+    patchelf --replace-needed libcurl-gnutls.so.4 libcurl.so.4 usr/share/spotify/spotify
+    cp -a usr/share/spotify/* ${DEBFETCHER_INSTALL_DESTDIR}/${THIS_BASEDIR}
+
+    ln -sf ${DEBFETCHER_INSTALL_DESTDIR}/opt/spotify/spotify "${DEBFETCHER_BIN_SYMLINK_DIR}"
+}
+
+
+post_install()
+{
+    if [ ${KEEP_OLD} -eq 0 ] ; then
+        rm -rf -- "${DEBFETCHER_INSTALL_DESTDIR}${THIS_BASEDIR}_${TS}"
+    fi
+}
