@@ -1,0 +1,26 @@
+APTURL="https://packages.element.io/debian"
+DISTRO="default"
+REPO="main"
+PUBKEY="${PUBKEY_PATH}/element-io-archive-keyring.gpg"
+PACKAGE="element-desktop"
+
+TS=$(date +%s)
+THIS_BASEDIR="/opt/Element"
+
+install()
+{
+    #Inspired by Gentoo's ebuild
+
+    cp -a --parents --  opt/Element "${DEBFETCHER_INSTALL_DESTDIR}"
+    cp --parents -- usr/share/applications/element-desktop.desktop "${DEBFETCHER_INSTALL_DESTDIR}"
+    chmod o=r ${DEBFETCHER_INSTALL_DESTDIR}/usr/share/applications/element-desktop.desktop
+    
+    ln -sf ${DEBFETCHER_INSTALL_DESTDIR}/opt/Element/element-desktop "${DEBFETCHER_BIN_SYMLINK_DIR}"
+
+    find usr -name element-desktop.png | while read line ; do
+        path=$(dirname "$line")
+        mkdir -p -- /${DEBFETCHER_INSTALL_DESTDIR}/${path}
+        cp -a "$line" -- ${DEBFETCHER_INSTALL_DESTDIR}/${path}
+    done
+}
+
